@@ -1,33 +1,18 @@
-from reportlab.platypus import SimpleDocTemplate
-from reportlab.platypus import Paragraph, Spacer, Table, Image
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import colors
-from reportlab.graphics.shapes import Drawing
-from reportlab.graphics.charts.piecharts import Pie
-fruit = {
-  "elderberries": 1,
-  "figs": 1,
-  "apples": 2,
-  "durians": 3,
-  "bananas": 5,
-  "cherries": 8,
-  "grapes": 13
-}
-styles = getSampleStyleSheet()
-report = SimpleDocTemplate("./report.pdf")
-report_title = Paragraph("A Complete Inventory of My Fruit", styles["h1"])
-table_data = []
-for k, v in fruit.items():
-  table_data.append([k, v])
-report_table = Table(data=table_data)
-table_style = [('GRID', (0,0), (-1,-1), 1, colors.black)]
-report_table = Table(data=table_data, style=table_style, hAlign="LEFT")
-report_pie = Pie(width=3, height=3)
-report_pie.data = []
-report_pie.labels = []
-for fruit_name in sorted(fruit):
-  report_pie.data.append(fruit[fruit_name])
-  report_pie.labels.append(fruit_name)
-report_chart = Drawing()
-report_chart.add(report_pie)
-report.build([report_title, report_table, report_chart])
+#!/usr/bin/env python3  # shebang
+
+from reportlab.platypus import SimpleDocTemplate  # used to generate PDFs
+from reportlab.platypus import Paragraph, Spacer, Table, Image  # flowables
+from reportlab.lib.styles import getSampleStyleSheet  # used for document styles
+from reportlab.lib import colors  # used for table styles
+
+def generate(filename, title, additional_info, table_data):  # function to generate PDF
+  styles = getSampleStyleSheet()  # sample dictionary of different styling
+  report = SimpleDocTemplate(filename)  # export directory and filename
+  report_title = Paragraph(title, styles["h1"])  # title style
+  report_info = Paragraph(additional_info, styles["BodyText"])  # body style
+  table_style = [('GRID', (0,0), (-1,-1), 1, colors.black),  # table style
+                ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER')]
+  report_table = Table(data=table_data, style=table_style, hAlign="LEFT")  # table info
+  empty_line = Spacer(1,20)
+  report.build([report_title, empty_line, report_info, empty_line, report_table])  # generates PDF
